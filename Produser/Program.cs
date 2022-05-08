@@ -1,21 +1,17 @@
-﻿using AForge.Video;
-using AForge.Video.DirectShow;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.IO;
+using System.Net.Sockets;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Configuration;
+using AForge.Video.DirectShow;
+using AForge.Video;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace Produser
 {
-    internal static class Program
+    internal class Program
     {
         const int SW_HIDE = 0;
         const int SW_SHOW = 5;
@@ -29,17 +25,13 @@ namespace Produser
 
         private static IPEndPoint consumerEndPoint;
         private static UdpClient udpClient = new UdpClient();
-      // [STAThread]
+
         static void Main()
         {
-            
-            //Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
-            // Application.Run(new Form1());
             var consumerIp = ConfigurationManager.AppSettings.Get("consumerIp");
             var consumerPort = int.Parse(ConfigurationManager.AppSettings.Get("consumerPort"));
             consumerEndPoint = new IPEndPoint(IPAddress.Parse(consumerIp), consumerPort);
-            //Console.WriteLine($"consumer: {consumerEndPoint}");
+            Console.WriteLine($"consumer: {consumerEndPoint}");
             FilterInfoCollection videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
             VideoCaptureDevice videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
             videoSource.NewFrame += VideoSource_NewFrame;
@@ -54,7 +46,7 @@ namespace Produser
             var bmp = new Bitmap(eventArgs.Frame, 800, 600);
             try
             {
-                using(var ms = new MemoryStream())
+                using (var ms = new MemoryStream())
                 {
                     bmp.Save(ms, ImageFormat.Jpeg);
                     var bytes = ms.ToArray();
