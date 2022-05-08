@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+using System.Configuration;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
+using System.Net.Sockets;
 using System.Windows.Forms;
 
 namespace Consumer
@@ -19,7 +16,17 @@ namespace Consumer
 
         private async void Form1_Load(object sender, EventArgs e)
         {
-
+            var port = int.Parse(ConfigurationManager.AppSettings.Get("port"));
+            var client = new UdpClient(port);
+            while(true)
+            {
+                var data = await client.ReceiveAsync();
+                using (var ms =new MemoryStream(data.Buffer))
+                {
+                    pictureBox1.Image = new Bitmap(ms);
+                }
+                Text = $"Bytes received: {data.Buffer.Length * sizeof(byte)}";
+            }
         }
     }
 }
