@@ -2,6 +2,8 @@
 using System.Configuration;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Sockets;
 using System.Windows.Forms;
 
@@ -27,6 +29,13 @@ namespace Consumer
                 }
                 Text = $"Bytes received: {data.Buffer.Length * sizeof(byte)}";
             }
+        }
+
+        private void pictureBox1_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            MessageBox.Show(string.Join("\n",host.AddressList.Where(i=>i.AddressFamily == AddressFamily.InterNetwork)));
+
         }
     }
 }
